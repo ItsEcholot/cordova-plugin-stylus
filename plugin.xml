@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+  xmlns="http://apache.org/cordova/ns/plugins/1.0"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  id="cordova-plugin-stylus" version="0.0.1">
+  <name>StylusPlugin</name>
+  <description>Cordova Stylus Plugin</description>
+  <license>Apache 2.0</license>
+  <author email="me@echolot.io" href="https://echolot.io">
+    Marc Berchtold &lt;Echolot&gt;
+  </author>
+  <keywords>cordova,stylus,pen,pencil</keywords>
+  <js-module src="www/stylus.js" name="StylusPlugin">
+    <clobbers target="StylusPlugin" />
+  </js-module>
+  <platform name="android">
+    <config-file target="config.xml" parent="/*">
+      <feature name="StylusPlugin">
+        <param name="android-package" value="org.apache.cordova.plugin.Stylus" />
+      </feature>
+    </config-file>
+    <source-file src="src/android/Stylus.java" target-dir="src/org/apache/cordova/plugin" />
+  </platform>
+</plugin>
