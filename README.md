@@ -6,7 +6,7 @@ Currently only supports Android but looking to support more platforms in the fut
 
 ## Usage
 ```JavaScript
-if (StylusPlugin) {
+if (window.StylusPlugin) {
   StylusPlugin.registerListeners();
 }
 
