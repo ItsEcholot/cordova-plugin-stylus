@@ -1,0 +1,29 @@
+{
+  "name": "cordova-plugin-stylus",
+  "version": "0.1.0",
+  "description": "Cordova Stylus Plugin",
+  "cordova": {
+    "id": "cordova-plugin-stylus",
+    "platforms": [
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ItsEcholot/cordova-plugin-stylus.git"
+  },
+  "keywords": [
+    "cordova",
+    "stylus",
+    "pen",
+    "pencil",
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "author": "Marc Berchtold <Echolot>",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/ItsEcholot/cordova-plugin-stylus/issues"
+  },
+  "homepage": "https://github.com/ItsEcholot/cordova-plugin-stylus#readme"
+}
