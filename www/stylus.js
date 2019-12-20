@@ -5,14 +5,17 @@ var StylusPlugin = function () {
 StylusPlugin.prototype.registerListeners = function () {
   cordova.exec(data => {
     switch (data.type) {
-      case "up":
-        cordova.fireDocumentEvent('stylusplugin-up', data);
-        break;
-      case "down":
+      case 'stylusplugin-down':
         cordova.fireDocumentEvent('stylusplugin-down', data);
         break;
-      case "move":
+      case 'stylusplugin-up':
+        cordova.fireDocumentEvent('stylusplugin-up', data);
+        break;
+      case 'stylusplugin-move':
         cordova.fireDocumentEvent('stylusplugin-move', data);
+        break;
+      case 'stylusplugin-unknown':
+        // What are we doing with this stuff?
         break;
     }
   }, (err) => {

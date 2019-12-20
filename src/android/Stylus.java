@@ -2,25 +2,18 @@ package org.apache.cordova.plugin.stylus;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaInterface;
-import org.apache.cordova.CordovaWebView;
 
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
 public class Stylus extends CordovaPlugin implements View.OnTouchListener {
   private CallbackContext callbackContext;
-
-  @Override
-  public void initialize(CordovaInterface cordova, CordovaWebView webView) {
-    // frame = (View) cordova.getActivity().findViewById(android.R.id.content);
-    super.initialize(cordova, webView);
-  }
 
   @Override
   public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
@@ -29,57 +22,84 @@ public class Stylus extends CordovaPlugin implements View.OnTouchListener {
         webView.getView().setOnTouchListener(this);
         return true;
     }
+    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, "Invalid action"));
     return false;
   }
 
   @Override
   public boolean onTouch(View v, MotionEvent event) {
     int pointerId = event.getPointerId(0);
-    if (event.getToolType(pointerId) != MotionEvent.TOOL_TYPE_STYLUS) {
+    try {
+      if (event.getToolType(pointerId) != MotionEvent.TOOL_TYPE_STYLUS) {
+        return false;
+      }
+    } catch (IllegalArgumentException e) {
       return false;
     }
     int historySize = event.getHistorySize();
 
     float prevX = 0, prevY = 0;
     float pressure;
-    for (int i = 0; i < historySize; i++) {
+    for (int i = 0; i < historySize - 6; i += 6) { // TODO: Support changeable step size
       if (Math.abs(event.getHistoricalX(pointerId, i) - prevX) < 1 &&
               Math.abs(event.getHistoricalY(pointerId, i) - prevY) < 1) {
+        i -= 5;
         continue;
       }
-      prevX = event.getHistoricalX(pointerId, i);
-      prevY = event.getHistoricalY(pointerId, i);
+      prevX = event.getHistoricalX(pointerId, i) * 0.5f; // TODO: Get correct scaling
+      prevY = event.getHistoricalY(pointerId, i) * 0.5f;
       pressure = event.getHistoricalPressure(pointerId, i);
 
-      generateJSON(event, (int) prevX, (int) prevY, pressure);
+      generateJSON(event, pointerId, prevX, prevY, pressure);
     }
-    generateJSON(event, (int) event.getX(pointerId), (int) event.getY(pointerId), event.getPressure(pointerId));
+    generateJSON(event, pointerId, event.getX(pointerId) * 0.5f, event.getY(pointerId) * 0.5f, event.getPressure(pointerId));
 
     v.performClick();
     return true;
   }
 
-  private void generateJSON(MotionEvent event, int x, int y, float pressure) {
+  private void generateJSON(MotionEvent event, int pointerId, float x, float y, float pressure) {
     JSONObject json = new JSONObject();
     String type;
     switch (event.getAction()) {
       case MotionEvent.ACTION_DOWN:
-        type = "down";
+        type = "stylusplugin-down";
         break;
       case MotionEvent.ACTION_UP:
-        type = "up";
+        type = "stylusplugin-up";
         break;
       case MotionEvent.ACTION_MOVE:
-        type = "move";
+        type = "stylusplugin-move";
         break;
       default:
-        type = "unknown";
+        type = "stylusplugin-unknown";
     }
     try {
+      json.put("altKey", event.getMetaState() == KeyEvent.META_ALT_ON);
+      json.put("ctrlKey", event.getMetaState() == KeyEvent.META_CTRL_ON);
+      json.put("metaKey", event.getMetaState() == KeyEvent.META_META_ON);
+      json.put("shiftKey", event.getMetaState() == KeyEvent.META_SHIFT_ON);
+      JSONObject touch = new JSONObject();
+      touch.put("identifier", pointerId);
+      touch.put("screenX", null);
+      touch.put("screenY", null);
+      touch.put("clientX", x);
+      touch.put("clientY", y);
+      touch.put("pageX", null);
+      touch.put("pageY", null);
+      touch.put("target", null);
+      touch.put("radiusX", event.getAxisValue(MotionEvent.AXIS_X, pointerId));
+      touch.put("radiusY", event.getAxisValue(MotionEvent.AXIS_Y, pointerId));
+      touch.put("rotationAngle", event.getOrientation(pointerId));
+      touch.put("force", pressure);
+      touch.put("stylusButton", event.getButtonState() == MotionEvent.BUTTON_STYLUS_PRIMARY ? "primary" :
+              ( event.getButtonState() == MotionEvent.BUTTON_STYLUS_SECONDARY ? "secondary" : null));
+      JSONArray touches = new JSONArray();
+      touches.put(touch);
+      json.put("targetTouches", touches);
+      json.put("touches", touches);
+      json.put("changedTouches", touches);
       json.put("type", type);
-      json.put("x", x);
-      json.put("y", y);
-      json.put("pressure", pressure);
     } catch (JSONException ex) {
       throw new RuntimeException("Failed to create onTouch JSON obj " + ex.getMessage());
     }

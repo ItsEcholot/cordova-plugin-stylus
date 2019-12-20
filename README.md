@@ -21,12 +21,4 @@ document.addEventListener('stylusplugin-move', event => {
 });
 ```
 
-The event object looks like this:
-
-```TypeScript
-{
-  "x": number,
-  "y": number,
-  "pressure": number
-}
-```
+The event object is trying to replicate a TouchEvent to allow for drop in replacement / adoption. For more information visit the official TouchEvent documentation in conjunction with the Stylus.java source file.

@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-stylus",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Cordova Stylus Plugin",
   "cordova": {
     "id": "cordova-plugin-stylus",
