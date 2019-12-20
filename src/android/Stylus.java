@@ -53,7 +53,7 @@ public class Stylus extends CordovaPlugin implements View.OnTouchListener {
 
       generateJSON(event, (int) prevX, (int) prevY, pressure);
     }
-    generateJSON(event, (int) event.getX(), (int) event.getY(), event.getPressure());
+    generateJSON(event, (int) event.getX(pointerId), (int) event.getY(pointerId), event.getPressure(pointerId));
 
     v.performClick();
     return true;
