@@ -1,19 +1,27 @@
 package org.apache.cordova.plugin.stylus;
 
+import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
-
+import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
 public class Stylus extends CordovaPlugin implements View.OnTouchListener {
   private CallbackContext callbackContext;
+  private DisplayMetrics displayMetrics;
+
+  public void initialize(CordovaInterface cordovaInterface, CordovaWebView webView) {
+    displayMetrics = cordovaInterface.getContext().getResources().getDisplayMetrics();
+  }
 
   @Override
   public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
@@ -36,7 +44,7 @@ public class Stylus extends CordovaPlugin implements View.OnTouchListener {
     } catch (IllegalArgumentException e) {
       return false;
     }
-    int historySize = event.getHistorySize();
+    /*int historySize = event.getHistorySize();
 
     float prevX = 0, prevY = 0;
     float pressure;
@@ -46,15 +54,13 @@ public class Stylus extends CordovaPlugin implements View.OnTouchListener {
         i -= 5;
         continue;
       }
-      prevX = event.getHistoricalX(pointerId, i) * 0.5f; // TODO: Get correct scaling
-      prevY = event.getHistoricalY(pointerId, i) * 0.5f;
+      prevX = event.getHistoricalX(pointerId, i) / displayMetrics.density;
+      prevY = event.getHistoricalY(pointerId, i) / displayMetrics.density;
       pressure = event.getHistoricalPressure(pointerId, i);
 
       generateJSON(event, pointerId, prevX, prevY, pressure);
-    }
-    generateJSON(event, pointerId, event.getX(pointerId) * 0.5f, event.getY(pointerId) * 0.5f, event.getPressure(pointerId));
-
-    v.performClick();
+    }*/
+    generateJSON(event, pointerId, event.getX(pointerId) / displayMetrics.density, event.getY(pointerId) / displayMetrics.density, event.getPressure(pointerId));
     return true;
   }
 
